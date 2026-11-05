@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+*.so
+
+# Environments and tools
+.venv*/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+site/
+
+# Data, runs and checkpoints (never commit these)
+benchmarks/results/
+data/
+runs/
+lightning_logs/
+wandb/
+*.ckpt
+*.pt
+*.pth
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store

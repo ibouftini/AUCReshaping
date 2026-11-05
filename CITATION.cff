@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the software and the AUCReshaping paper."
+title: "aucreshape: AUCReshaping for PyTorch"
+type: software
+authors:
+  - family-names: Bouftini
+    given-names: Imade
+    email: imadbouftini04@gmail.com
+license: MIT
+repository-code: "https://github.com/ibouftini/AUCReshaping"
+version: 0.1.0
+date-released: "2026-11-01"
+keywords: [pytorch, roc, sensitivity, specificity, loss function]
+references:
+  - type: article
+    title: "AUCReshaping: improved sensitivity at high-specificity"
+    authors:
+      - family-names: Bhat
+        given-names: Sheethal
+      - family-names: Mansoor
+        given-names: Awais
+      - family-names: Georgescu
+        given-names: Bogdan
+      - family-names: Panambur
+        given-names: Adarsh B.
+      - family-names: Ghesu
+        given-names: Florin C.
+      - family-names: Islam
+        given-names: Saahil
+      - family-names: Packhaeuser
+        given-names: Kai
+      - family-names: Rodriguez-Salas
+        given-names: Dalia
+      - family-names: Grbic
+        given-names: Sasa
+      - family-names: Maier
+        given-names: Andreas
+    journal: "Scientific Reports"
+    volume: 13
+    start: 21097
+    year: 2023
+    doi: "10.1038/s41598-023-48482-x"

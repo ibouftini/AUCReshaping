@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  UV_INDEX_PYTORCH_CPU: https://download.pytorch.org/whl/cpu
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+      - run: uv sync --locked --group integrations
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy src
+
+  test:
+    name: test (${{ matrix.os }}, py${{ matrix.python }}, torch ${{ matrix.torch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, python: "3.10", torch: "2.1" }
+          - { os: ubuntu-latest, python: "3.13", torch: "latest" }
+          - { os: macos-latest, python: "3.13", torch: "latest" }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python }}
+      - run: uv sync --locked --group integrations
+      - name: Pin the oldest supported torch
+        if: matrix.torch != 'latest'
+        run: >
+          uv pip install "torch==${{ matrix.torch }}.*" "numpy<2"
+          --index-url https://download.pytorch.org/whl/cpu
+          --extra-index-url https://pypi.org/simple
+      - run: uv run --no-sync python -c "import torch, sys; print(sys.version, torch.__version__)"
+      - name: Tests with coverage gate
+        run: uv run --no-sync pytest -m "not slow and not gpu and not distributed and not examples" --cov-report=xml
+      - name: Examples (reduced set)
+        if: matrix.os == 'ubuntu-latest' && matrix.torch == 'latest'
+        run: uv run --no-sync pytest tests/examples -m examples -k "plain_pytorch or custom_loss_weights or multilabel" --no-cov
+      - uses: actions/upload-artifact@v7
+        if: matrix.os == 'ubuntu-latest' && matrix.torch == 'latest'
+        with:
+          name: coverage-xml
+          path: coverage.xml
+
+  benchmarks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+      - run: uv sync --locked --group bench
+      - run: uv run pytest benchmarks/tests --no-cov -q
+      - run: uv run python -m benchmarks.review.smoke
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+      - run: uv build
+      - run: uvx twine check --strict dist/*
+      - name: Wheel must contain only the package
+        run: |
+          python -m zipfile -l dist/*.whl | tee wheel.txt
+          ! grep -E "(^| )(tests|examples|docs)/" wheel.txt
+      - name: Install the wheel with torch only and import it
+        run: |
+          uv venv /tmp/wheel-env
+          uv pip install --python /tmp/wheel-env dist/*.whl --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+          /tmp/wheel-env/bin/python -c "import aucreshape; print(aucreshape.__version__)"

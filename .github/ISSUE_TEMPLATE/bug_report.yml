@@ -1,0 +1,26 @@
+name: Bug report
+description: Something does not work as documented
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: A short, self-contained snippet (random tensors are fine).
+      render: python
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: Output of `python -c "import aucreshape, torch, sys; print(aucreshape.__version__, torch.__version__, sys.version)"` and your device (CPU/CUDA/MPS).
+    validations:
+      required: true

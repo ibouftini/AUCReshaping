@@ -1,0 +1,146 @@
+[build-system]
+requires = ["uv_build>=0.9,<0.14"]
+build-backend = "uv_build"
+
+[project]
+name = "aucreshape"
+version = "0.1.0"
+description = "A PyTorch implementation of AUCReshaping, a fine-tuning loss that boosts positives misclassified at a high-specificity threshold."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Imade Bouftini", email = "imadbouftini04@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = ["torch>=2.1"]
+keywords = [
+    "pytorch",
+    "loss",
+    "roc",
+    "auc",
+    "sensitivity",
+    "specificity",
+    "imbalanced-learning",
+    "medical-imaging",
+    "fraud-detection",
+]
+classifiers = [
+    "Development Status :: 7 - Inactive",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/ibouftini/AUCReshaping"
+Documentation = "https://ibouftini.github.io/AUCReshaping"
+Repository = "https://github.com/ibouftini/AUCReshaping"
+Issues = "https://github.com/ibouftini/AUCReshaping/issues"
+Changelog = "https://github.com/ibouftini/AUCReshaping/blob/main/CHANGELOG.md"
+Paper = "https://doi.org/10.1038/s41598-023-48482-x"
+
+[project.optional-dependencies]
+lightning = ["lightning>=2.1"]
+
+[dependency-groups]
+lint = ["ruff>=0.17", "mypy>=1.18", "pre-commit>=4"]
+test = [
+    "pytest>=8",
+    "pytest-cov>=6",
+    "hypothesis>=6.100",
+    "scikit-learn>=1.3",
+    "numpy>=1.24",
+]
+dev = [{ include-group = "lint" }, { include-group = "test" }]
+# The evaluation code in benchmarks/ (not shipped): `uv sync --group bench`.
+bench = [
+    "matplotlib>=3.8",
+    "pyyaml>=6",
+    "imbalanced-learn>=0.12",
+    "pandas>=2",
+    "torchvision>=0.16",
+    "medmnist>=3",
+]
+# LibAUC baseline for the benchmarks; heavy (torch_geometric, ogb, ...).
+baselines = ["libauc>=2.0"]
+# Framework integrations: tested in CI (`integrations`) and by the examples (`examples`).
+integrations = ["lightning>=2.1"]
+examples = [{ include-group = "integrations" }, "transformers[torch]>=4.40"]
+docs = ["mkdocs-material>=9.5", "mkdocstrings[python]>=0.26"]
+
+# CPU-only torch for local development and CI. This only affects uv's resolution here;
+# the published metadata keeps the plain `torch>=2.1` requirement.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform != 'darwin'" }]
+torchvision = [{ index = "pytorch-cpu", marker = "sys_platform != 'darwin'" }]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E", "F", "W", "I", "UP", "B", "SIM", "C4", "RUF", "N", "D", "PT", "NPY", "PERF", "ANN",
+]
+ignore = ["D105", "D107", "N812"]  # N812: `import torch.nn.functional as F` is idiomatic
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D", "ANN"]
+"examples/**" = ["D", "ANN"]
+"benchmarks/**" = ["D", "ANN"]
+
+[tool.mypy]
+strict = true
+files = ["src"]
+python_version = "3.10"
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["lightning.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["aucreshape.integrations.lightning"]
+disallow_subclassing_any = false
+warn_unused_ignores = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "src"]
+addopts = "-ra --strict-markers --strict-config --doctest-modules --cov --cov-report=term-missing:skip-covered"
+markers = [
+    "slow: long-running tests (torch.compile, long runs)",
+    "gpu: needs CUDA; skipped automatically when unavailable",
+    "distributed: multi-process torch.distributed (gloo, CPU) tests",
+    "examples: runs the scripts in examples/",
+]
+filterwarnings = ["error::DeprecationWarning:aucreshape.*"]
+
+[tool.coverage.run]
+source = ["aucreshape"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_covered = true
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "@overload",
+    "\\.\\.\\.",
+]

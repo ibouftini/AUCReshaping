@@ -1,0 +1,29 @@
+# Tabular benchmark.
+name: tabular
+seeds: [100, 101, 102, 103, 104]
+specificities: [0.95, 0.98]
+datasets:
+  synthetic:
+    params: {seed: 1}
+    target: 0.98
+    train: {pretrain_epochs: 30, finetune_epochs: 10, finetune_lr: 0.0003, batch_size: 256}
+  mammography:
+    target: 0.98
+    train: {pretrain_epochs: 60, finetune_epochs: 10, finetune_lr: 0.0003, batch_size: 128}
+  protein_homo:
+    target: 0.98
+    train: {pretrain_epochs: 10, finetune_epochs: 5, finetune_lr: 0.0003, batch_size: 512}
+  creditcard:
+    params: {positive: normal}
+    target: 0.98
+    train: {pretrain_epochs: 10, finetune_epochs: 5, finetune_lr: 0.0003, batch_size: 512,
+            dropout: 0.5, pos_weight: 5.0}
+methods:
+  bce: [{}]
+  weighted_bce: [{pos_weight: 2}, {pos_weight: 4}, {pos_weight: 8}, {pos_weight: 16}]
+  focal: [{gamma: 0.5}, {gamma: 1.0}, {gamma: 2.0}, {gamma: 3.0}]
+  libauc_pauc: [{Lambda: 0.1, margin: 0.5}, {Lambda: 0.1, margin: 1.0},
+                {Lambda: 1.0, margin: 0.5}, {Lambda: 1.0, margin: 1.0}]
+  aucreshape_prob: [{boost: 0.05}, {boost: 0.1}, {boost: 0.2}, {boost: 0.4}]
+  aucreshape_logit: [{boost: 0.5}, {boost: 1.0}, {boost: 2.0}, {boost: 4.0}]
+  aucreshape_weight: [{boost: 0.5}, {boost: 1.0}, {boost: 2.0}, {boost: 4.0}]

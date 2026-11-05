@@ -1,0 +1,50 @@
+# aucreshape review figures: text typeset by LaTeX in Computer Modern (Overleaf's
+# default), the maintainer's palette, thin marks and recessive axes. Light theme; the dark
+# theme overrides colours in benchmarks/review/figures.py. Sizes assume figures drawn at
+# their final width (about 6 in for the docs column), never scaled after export.
+
+text.usetex: True
+text.latex.preamble: \usepackage{amsmath}
+font.family: serif
+font.size: 9
+axes.titlesize: 10
+axes.titlelocation: left
+axes.labelsize: 9
+xtick.labelsize: 8
+ytick.labelsize: 8
+legend.fontsize: 8
+legend.frameon: False
+
+figure.facecolor: FEFAE0
+axes.facecolor: FEFAE0
+savefig.facecolor: FEFAE0
+text.color: 0A0908
+axes.labelcolor: 0A0908
+axes.edgecolor: 6B665C
+xtick.color: 6B665C
+ytick.color: 6B665C
+axes.linewidth: 0.6
+xtick.major.width: 0.6
+ytick.major.width: 0.6
+xtick.major.size: 3
+ytick.major.size: 3
+axes.spines.top: False
+axes.spines.right: False
+axes.grid: True
+axes.axisbelow: True
+grid.color: E9E4CC
+grid.linewidth: 0.5
+
+lines.linewidth: 1.5
+lines.markersize: 4
+axes.prop_cycle: cycler('color', ['7B2CBF', 'FF9100', '2A9D8F', '4361EE'])
+
+figure.dpi: 150
+savefig.dpi: 300
+savefig.bbox: tight
+savefig.pad_inches: 0.04
+svg.fonttype: path
+pdf.fonttype: 42
+
+# ASCII minus in tick labels (LaTeX still typesets a proper minus sign)
+axes.unicode_minus: False

@@ -1,0 +1,81 @@
+site_name: aucreshape
+site_description: A PyTorch implementation of AUCReshaping, and an evaluation of when it helps.
+site_url: https://ibouftini.github.io/AUCReshaping/
+repo_url: https://github.com/ibouftini/AUCReshaping
+repo_name: ibouftini/AUCReshaping
+edit_uri: edit/main/docs/
+copyright: MIT licensed. An independent implementation of Bhat et al., Sci. Rep. 13, 21097 (2023).
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      toggle: {icon: material/weather-night, name: Dark mode}
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      toggle: {icon: material/weather-sunny, name: Light mode}
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Concepts:
+      - The method: concepts/method.md
+      - Label conventions: concepts/label-conventions.md
+      - Thresholds and boosts: concepts/thresholds-and-boosts.md
+      - Numerics: concepts/numerics.md
+      - The implementation and the paper: concepts/implementation-vs-paper.md
+  - How-to guides:
+      - Plain PyTorch: how-to/plain-pytorch.md
+      - PyTorch Lightning: how-to/lightning.md
+      - Hugging Face Trainer: how-to/huggingface.md
+      - Your own per-sample loss: how-to/custom-loss.md
+      - Multi-label and missing labels: how-to/multilabel.md
+      - Distributed training (DDP): how-to/ddp.md
+      - Checkpoint and resume: how-to/checkpointing.md
+      - Thresholds from validation: how-to/validation-thresholds.md
+  - API reference: reference/api.md
+  - Results: results.md
+  - FAQ: faq.md
+  - Changelog: changelog.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: numpy
+            show_source: false
+            show_root_heading: true
+            members_order: source
+            separate_signature: true
+            show_signature_annotations: true
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc: {permalink: true}
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: math
+          class: arithmatex
+          format: !!python/object/apply:pymdownx.arithmatex.arithmatex_fenced_format
+            kwds: {mode: generic, tag: pre}
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.snippets: {base_path: ["."], check_paths: true}
+  - pymdownx.arithmatex: {generic: true}
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js
